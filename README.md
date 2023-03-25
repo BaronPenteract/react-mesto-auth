@@ -1,4 +1,4 @@
-# Проект: [Mesto Russia](https://baronpenteract.github.io/mesto-react/index.html)
+# Проект: [Mesto Russia](https://baronpenteract.github.io/react-mesto-auth/index.html)
 
 
 ### Обзор
