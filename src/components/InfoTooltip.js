@@ -1,5 +1,5 @@
-import success from '../images/icons/success.svg';
-import error from '../images/icons/error.svg';
+import successImage from '../images/icons/success.svg';
+import errorImage from '../images/icons/error.svg';
 
 const InfoTooltip = ({ isOpen, isSuccess, onClose }) => {
   isOpen
@@ -27,7 +27,7 @@ const InfoTooltip = ({ isOpen, isSuccess, onClose }) => {
         <button className="popup__close" type="button" title="Закрыть" onClick={onClose}></button>
         <img
           className="popup__image-info-tooltip"
-          src={isSuccess ? success : error}
+          src={isSuccess ? successImage : errorImage}
           alt={isSuccess ? 'Успех' : 'Что-то пошло не так'}
         />
         <h2 className="popup__title-info-tooltip">
