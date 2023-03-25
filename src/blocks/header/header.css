@@ -1,10 +1,13 @@
 .header {
+  display: flex;
+  justify-content: space-between;
   width: 100%;
   max-width: 880px;
-  min-height: 74px;
+  height: 74px;
   margin-bottom: 40px;
   box-sizing: border-box;
   position: relative;
+  transition: padding-top .2s linear, height .2s linear;
 }
 
 .header::after {
@@ -19,8 +22,9 @@
 
 @media screen and (max-width: 900px) {
   .header {
-    min-height: 56px;
-    padding-left: 27px;
+    height: 56px;
+    padding: 0 30px 32px;
     margin-bottom: 42px;
+    align-items: end;
   }
 }
