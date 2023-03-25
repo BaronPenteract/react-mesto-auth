@@ -1,14 +1,26 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import logo from '../images/header__logo.svg';
 
-export default function Header() {
+export default function Header({ email }) {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [isBurgerActive, setIsBurgerActive] = React.useState(false);
 
+  window.onresize = () => {
+    setIsBurgerActive(false);
+  };
+
+  const singOut = () => {
+    setIsBurgerActive(false);
+    localStorage.removeItem('jwt');
+    navigate('/sing-up', { replace: true });
+  };
+
   let headerAuthElement;
+
   if (location.pathname === '/sing-up') {
     headerAuthElement = (
       <Link to="/sing-in" className="header__auth-link link">
@@ -25,10 +37,10 @@ export default function Header() {
     headerAuthElement = (
       <>
         <div className={`header__auth ${isBurgerActive ? 'header__auth_active' : ''}`}>
-          <span className="header__email">email@mail.com</span>
-          <a href="/" className="header__logout-link link">
+          <span className="header__email">{email}</span>
+          <button type="button" className="header__logout-link link" onClick={singOut}>
             Выйти
-          </a>
+          </button>
         </div>
         <button className="burger" type="button" onClick={() => setIsBurgerActive(!isBurgerActive)}>
           <span className={`burger__line ${isBurgerActive ? 'burger__line_active' : ''}`}></span>

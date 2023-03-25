@@ -16,9 +16,7 @@ export const register = ({ password, email }) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ password, email }),
-  })
-    .then(handleResponse)
-    .catch((err) => console.log(err));
+  }).then(handleResponse);
 };
 
 export const login = ({ password, email }) => {
@@ -28,9 +26,7 @@ export const login = ({ password, email }) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ password, email }),
-  })
-    .then(handleResponse)
-    .catch((err) => console.log(err));
+  }).then(handleResponse);
 };
 
 export const checkToken = (jwt) => {
@@ -40,7 +36,5 @@ export const checkToken = (jwt) => {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${jwt}`,
     },
-  })
-    .then(handleResponse)
-    .catch((err) => console.log(err));
+  }).then(handleResponse);
 };

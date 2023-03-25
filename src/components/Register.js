@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { register } from '../utils/Auth';
 
-const Register = () => {
+const Register = ({ setIsSuccessAuth, setIsInfoTooltipOpen }) => {
   const [formValue, setFormValue] = React.useState({
     email: '',
     password: '',
@@ -23,16 +23,30 @@ const Register = () => {
   const submitHandler = (e) => {
     e.preventDefault();
 
-    register(formValue).then((res) => {
-      if (res) {
-        navigate('/sing-up', { replace: true });
-      }
-    });
+    register(formValue)
+      .then((res) => {
+        if (res) {
+          setIsSuccessAuth(true);
+          navigate('/sing-up', { replace: true });
+          setIsInfoTooltipOpen(true);
+        }
+      })
+      .catch((err) => {
+        setIsSuccessAuth(false);
+        setIsInfoTooltipOpen(true);
+        console.log(err);
+      });
   };
 
   return (
     <main className="auth">
-      <form className={`form-auth`} name="formEdit" onSubmit={submitHandler} action="/" noValidate>
+      <form
+        className={`form-auth`}
+        name="formRegister"
+        onSubmit={submitHandler}
+        action="/"
+        noValidate
+      >
         <h1 className="form-auth__title">Регистрация</h1>
 
         <fieldset className="form-auth__input-container">

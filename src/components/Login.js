@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../utils/Auth';
 
-const Login = ({ setLoggedIn }) => {
+const Login = ({ setLoggedIn, setIsSuccessAuth, setIsInfoTooltipOpen, setEmail }) => {
   const [formValue, setFormValue] = React.useState({
     email: '',
     password: '',
@@ -22,15 +22,25 @@ const Login = ({ setLoggedIn }) => {
   const submitHandler = (e) => {
     e.preventDefault();
 
-    login(formValue).then(() => {
-      setLoggedIn(true);
-      navigate('/', { replace: true });
-    });
+    login(formValue)
+      .then((res) => {
+        if (res) {
+          localStorage.setItem('jwt', res.token);
+          setEmail(formValue.email);
+          setLoggedIn(true);
+          navigate('/', { replace: true });
+        }
+      })
+      .catch((err) => {
+        setIsSuccessAuth(false);
+        setIsInfoTooltipOpen(true);
+        console.log(err);
+      });
   };
 
   return (
     <main className="auth">
-      <form className={`form-auth`} name="formEdit" onSubmit={submitHandler} action="/" noValidate>
+      <form className={`form-auth`} name="formLogin" onSubmit={submitHandler} action="/" noValidate>
         <h1 className="form-auth__title">Вход</h1>
 
         <fieldset className="form-auth__input-container">
