@@ -1,41 +1,20 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-import { register } from '../utils/Auth';
+import { useFormAndValidation } from '../hooks/useFormAndValidation';
 
-const Register = ({ setIsSuccessAuth, setIsInfoTooltipOpen }) => {
-  const [formValue, setFormValue] = React.useState({
-    email: '',
-    password: '',
-  });
+const Register = ({ onRegister }) => {
+  const { values, handleChange, errors, isValid, setIsValid } = useFormAndValidation();
 
-  const navigate = useNavigate();
+  const submitButton = React.useRef();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormValue({
-      ...formValue,
-      [name]: value,
-    });
-  };
+  React.useEffect(() => {
+    setIsValid(false);
+  }, []);
 
   const submitHandler = (e) => {
     e.preventDefault();
-
-    register(formValue)
-      .then((res) => {
-        if (res) {
-          setIsSuccessAuth(true);
-          navigate('/sing-up', { replace: true });
-          setIsInfoTooltipOpen(true);
-        }
-      })
-      .catch((err) => {
-        setIsSuccessAuth(false);
-        setIsInfoTooltipOpen(true);
-        console.log(err);
-      });
+    onRegister(values, submitButton, 'Регистрация...', submitButton.current.textContent);
   };
 
   return (
@@ -50,27 +29,43 @@ const Register = ({ setIsSuccessAuth, setIsInfoTooltipOpen }) => {
         <h1 className="form-auth__title">Регистрация</h1>
 
         <fieldset className="form-auth__input-container">
-          <input
-            className={`form-auth__input`}
-            type="email"
-            name="email"
-            onChange={handleChange}
-            placeholder="Email"
-            required
-          />
-          <input
-            className={`form-auth__input`}
-            type="password"
-            name="password"
-            onChange={handleChange}
-            placeholder="Пароль"
-            required
-          />
+          <label className="form-auth__label">
+            <input
+              className={`form-auth__input`}
+              type="email"
+              name="email"
+              onChange={handleChange}
+              value={values.email || ''}
+              placeholder="Email"
+              required
+            />
+            <span className={`form-auth__error ${errors.email ? 'form-auth__error_active' : ''}`}>
+              {errors.email || ''}
+            </span>
+          </label>
+          <label className="form-auth__label">
+            <input
+              className={`form-auth__input`}
+              type="password"
+              name="password"
+              onChange={handleChange}
+              value={values.password || ''}
+              placeholder="Пароль"
+              minLength={4}
+              required
+            />
+            <span
+              className={`form-auth__error ${errors.password ? 'form-auth__error_active' : ''}`}
+            >
+              {errors.password || ''}
+            </span>
+          </label>
         </fieldset>
         <div className="form-auth__footer">
           <button
+            ref={submitButton}
             className={`form-auth__btn form-auth__btn_type_submit `}
-            disabled={false}
+            disabled={!isValid}
             type="submit"
           >
             Зарегистрироваться

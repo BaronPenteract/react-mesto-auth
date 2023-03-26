@@ -1,41 +1,20 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { login } from '../utils/Auth';
 
-const Login = ({ setLoggedIn, setIsSuccessAuth, setIsInfoTooltipOpen, setEmail }) => {
-  const [formValue, setFormValue] = React.useState({
-    email: '',
-    password: '',
-  });
+import { useFormAndValidation } from '../hooks/useFormAndValidation';
 
-  const navigate = useNavigate();
+const Login = ({ onLogin }) => {
+  const { values, handleChange, errors, isValid, setIsValid } = useFormAndValidation();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const submitButton = React.useRef();
 
-    setFormValue({
-      ...formValue,
-      [name]: value,
-    });
-  };
+  React.useEffect(() => {
+    setIsValid(false);
+  }, []);
 
   const submitHandler = (e) => {
     e.preventDefault();
 
-    login(formValue)
-      .then((res) => {
-        if (res) {
-          localStorage.setItem('jwt', res.token);
-          setEmail(formValue.email);
-          setLoggedIn(true);
-          navigate('/', { replace: true });
-        }
-      })
-      .catch((err) => {
-        setIsSuccessAuth(false);
-        setIsInfoTooltipOpen(true);
-        console.log(err);
-      });
+    onLogin(values, submitButton, 'Подождите...', submitButton.current.textContent);
   };
 
   return (
@@ -44,27 +23,42 @@ const Login = ({ setLoggedIn, setIsSuccessAuth, setIsInfoTooltipOpen, setEmail }
         <h1 className="form-auth__title">Вход</h1>
 
         <fieldset className="form-auth__input-container">
-          <input
-            className={`form-auth__input`}
-            type="email"
-            name="email"
-            onChange={handleChange}
-            placeholder="Email"
-            required
-          />
-          <input
-            className={`form-auth__input`}
-            type="password"
-            name="password"
-            onChange={handleChange}
-            placeholder="Пароль"
-            required
-          />
+          <label className="form-auth__label">
+            <input
+              className={`form-auth__input`}
+              type="email"
+              name="email"
+              onChange={handleChange}
+              value={values.email || ''}
+              placeholder="Email"
+              required
+            />
+            <span className={`form-auth__error ${errors.email ? 'form-auth__error_active' : ''}`}>
+              {errors.email || ''}
+            </span>
+          </label>
+          <label className="form-auth__label">
+            <input
+              className={`form-auth__input`}
+              type="password"
+              name="password"
+              onChange={handleChange}
+              value={values.password || ''}
+              placeholder="Пароль"
+              required
+            />
+            <span
+              className={`form-auth__error ${errors.password ? 'form-auth__error_active' : ''}`}
+            >
+              {errors.password || ''}
+            </span>
+          </label>
         </fieldset>
         <div className="form-auth__footer">
           <button
+            ref={submitButton}
             className={`form-auth__btn form-auth__btn_type_submit `}
-            disabled={false}
+            disabled={!isValid}
             type="submit"
           >
             Войти

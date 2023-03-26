@@ -1,7 +1,12 @@
 import React from 'react';
-import Card from './Card';
-import { CurrentUserContext } from '../contexts/CurrentUserContext';
-import Footer from './Footer';
+
+import { CurrentUserContext } from '../../contexts/CurrentUserContext';
+
+import Card from '../Card';
+import CardSceleton from '../Card/CardSceleton';
+import Footer from '../Footer';
+import AvatarSceleton from './AvatarSceleton';
+import ProfileInfoSceleton from './ProfileInfoSceleton';
 
 export default function Main({
   onEditProfile,
@@ -31,13 +36,23 @@ export default function Main({
     </li>
   ));
 
+  const cardsSceletonElements = [...new Array(6)].map((_, idx) => (
+    <li key={idx}>
+      <CardSceleton />
+    </li>
+  ));
+
   return (
     <>
       <main className="content">
         <section className="profile">
           <div className="profile__container">
             <div className="profile__avatar-container">
-              <img className="profile__avatar" src={avatar} alt="Аватарка путешественника" />
+              {avatar ? (
+                <img className="profile__avatar" src={avatar} alt="Аватарка путешественника" />
+              ) : (
+                <AvatarSceleton className="profile__avatar" />
+              )}
               <button
                 className="profile__btn-avatar-edit anim-avatar-button"
                 type="button"
@@ -45,16 +60,20 @@ export default function Main({
                 onClick={onEditAvatar}
               ></button>
             </div>
-            <div className="profile__info">
-              <h1 className="profile__title">{name}</h1>
-              <button
-                className="profile__btn-edit"
-                type="button"
-                title="Редактировать"
-                onClick={onEditProfile}
-              ></button>
-              <p className="profile__subtitle">{about}</p>
-            </div>
+            {name && about ? (
+              <div className="profile__info">
+                <h1 className="profile__title">{name}</h1>
+                <button
+                  className="profile__btn-edit"
+                  type="button"
+                  title="Редактировать"
+                  onClick={onEditProfile}
+                ></button>
+                <p className="profile__subtitle">{about}</p>
+              </div>
+            ) : (
+              <ProfileInfoSceleton className="profile__info" />
+            )}
           </div>
           <button
             className="profile__btn-add"
@@ -64,7 +83,7 @@ export default function Main({
           ></button>
         </section>
         <section className="cards" aria-label="Места, где побывал">
-          <ul className="cards__list">{cardsElements}</ul>
+          <ul className="cards__list">{cards.length ? cardsElements : cardsSceletonElements}</ul>
         </section>
       </main>
       <Footer />

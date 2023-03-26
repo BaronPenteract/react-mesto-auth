@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import api from '../utils/Api';
-import { checkToken } from '../utils/Auth';
+import { checkToken, login, register } from '../utils/Auth';
 
 import Header from './Header';
 import Main from './Main';
@@ -12,17 +12,22 @@ import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import ConfirmPopup from './ConfirmPopup';
-
 import Login from './Login';
 import Register from './Register';
 import ProtectedRoute from './ProtectedRoute';
 import InfoTooltip from './InfoTooltip';
 
+import errorImage from '../images/icons/error.svg';
+import successImage from '../images/icons/success.svg';
+
 function App() {
   const [currentUser, setCurrentUser] = React.useState(React.useContext(CurrentUserContext));
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [email, setEmail] = React.useState('');
-  const [isSuccessAuth, setIsSuccessAuth] = React.useState(false);
+  const [infoToolTipContent, setInfoToolTipContent] = React.useState({
+    text: '',
+    image: '',
+  });
 
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
@@ -59,24 +64,36 @@ function App() {
 
   React.useEffect(() => {
     /* ------------------------------------------CARDS DATA */
-    api
-      .getInitialCards()
-      .then((cardsData) => {
-        setCards(cardsData);
-      })
-      .catch(api.handleError);
-  }, []);
+    if (loggedIn) {
+      api
+        .getInitialCards()
+        .then((cardsData) => {
+          setCards(cardsData);
+        })
+        .catch(api.handleError);
+    } else {
+      setCards([]);
+    }
+  }, [loggedIn]);
 
   //-------------------------------------------------------------------------GET USER
 
   React.useEffect(() => {
-    api
-      .getUser()
-      .then((userData) => {
-        setCurrentUser(userData);
-      })
-      .catch(api.handleError);
-  }, []);
+    if (loggedIn) {
+      api
+        .getUser()
+        .then((userData) => {
+          setCurrentUser(userData);
+        })
+        .catch(api.handleError);
+    } else {
+      setCurrentUser({
+        name: '',
+        about: '',
+        avatar: '',
+      });
+    }
+  }, [loggedIn]);
 
   //-------------------------------------------------------------------AVATAR
   function handleEditAvatarClick() {
@@ -196,10 +213,67 @@ function App() {
       });
   }
 
+  /* -------------------------------------------------------------------AUTH HANLERS */
+  const handleLogin = (formValue, submitButton, awaitText, originalText) => {
+    renderLoading(true, submitButton, awaitText, originalText);
+    login(formValue)
+      .then((res) => {
+        if (res) {
+          localStorage.setItem('jwt', res.token);
+          setEmail(formValue.email);
+          setLoggedIn(true);
+          navigate('/', { replace: true });
+        }
+      })
+      .catch((err) => {
+        setIsInfoTooltipOpen(true);
+        setInfoToolTipContent({
+          text: 'Что-то пошло не так! Попробуйте ещё раз.',
+          image: errorImage,
+        });
+        console.log(err);
+      })
+      .finally(() => {
+        renderLoading(false, submitButton, awaitText, originalText);
+      });
+  };
+
+  const handleRegister = (formValue, submitButton, awaitText, originalText) => {
+    renderLoading(true, submitButton, awaitText, originalText);
+    register(formValue)
+      .then((res) => {
+        if (res) {
+          navigate('/sing-up', { replace: true });
+          setIsInfoTooltipOpen(true);
+          setInfoToolTipContent({
+            text: 'Вы успешно зарегестрировались!',
+            image: successImage,
+          });
+        }
+      })
+      .catch((err) => {
+        setIsInfoTooltipOpen(true);
+        setInfoToolTipContent({
+          text: 'Что-то пошло не так! Попробуйте ещё раз.',
+          image: errorImage,
+        });
+        console.log(err);
+      })
+      .finally(() => {
+        renderLoading(false, submitButton, awaitText, originalText);
+      });
+  };
+
+  const handleSingOut = () => {
+    localStorage.removeItem('jwt');
+    setLoggedIn(false);
+    navigate('/sing-up', { replace: true });
+  };
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header email={email} />
+        <Header email={email} onSingOut={handleSingOut} />
         <Routes>
           <Route
             path="/"
@@ -217,26 +291,8 @@ function App() {
               />
             }
           />
-          <Route
-            path="/sing-up"
-            element={
-              <Login
-                setIsSuccessAuth={setIsSuccessAuth}
-                setIsInfoTooltipOpen={setIsInfoTooltipOpen}
-                setLoggedIn={setLoggedIn}
-                setEmail={setEmail}
-              />
-            }
-          />
-          <Route
-            path="/sing-in"
-            element={
-              <Register
-                setIsSuccessAuth={setIsSuccessAuth}
-                setIsInfoTooltipOpen={setIsInfoTooltipOpen}
-              />
-            }
-          />
+          <Route path="/sing-up" element={<Login onLogin={handleLogin} />} />
+          <Route path="/sing-in" element={<Register onRegister={handleRegister} />} />
           <Route path="/*" element={<Navigate to="/" replace />} />
         </Routes>
         {/* ------------------------------------------------------------------------AVATAR FORM */}
@@ -270,7 +326,7 @@ function App() {
         {/* ------------------------------------------------------------------------- InfoTooltip*/}
         <InfoTooltip
           isOpen={isInfoTooltipOpen}
-          isSuccess={isSuccessAuth}
+          infoToolTipContent={infoToolTipContent}
           onClose={closeAllPopups}
         />
       </div>

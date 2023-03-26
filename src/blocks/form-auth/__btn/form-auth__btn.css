@@ -15,6 +15,14 @@
   transition: opacity .2s linear;
 }
 
+.form-auth__btn:disabled {
+  opacity: .4;
+  cursor: default;
+}
+.form-auth__btn:disabled:hover {
+  opacity: .4;
+}
+
 .form-auth__btn:hover {
   opacity: 0.85;
 }

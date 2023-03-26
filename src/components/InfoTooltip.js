@@ -1,7 +1,4 @@
-import successImage from '../images/icons/success.svg';
-import errorImage from '../images/icons/error.svg';
-
-const InfoTooltip = ({ isOpen, isSuccess, onClose }) => {
+const InfoTooltip = ({ isOpen, infoToolTipContent, onClose }) => {
   isOpen
     ? document.addEventListener('keydown', closeByEsc)
     : document.removeEventListener('keydown', closeByEsc);
@@ -27,14 +24,10 @@ const InfoTooltip = ({ isOpen, isSuccess, onClose }) => {
         <button className="popup__close" type="button" title="Закрыть" onClick={onClose}></button>
         <img
           className="popup__image-info-tooltip"
-          src={isSuccess ? successImage : errorImage}
-          alt={isSuccess ? 'Успех' : 'Что-то пошло не так'}
+          src={infoToolTipContent.image}
+          alt={infoToolTipContent.text}
         />
-        <h2 className="popup__title-info-tooltip">
-          {isSuccess
-            ? 'Вы успешно зарегистрировались!'
-            : 'Что-то пошло не так! Попробуйте ещё раз.'}
-        </h2>
+        <h2 className="popup__title-info-tooltip">{infoToolTipContent.text}</h2>
       </div>
     </div>
   );
