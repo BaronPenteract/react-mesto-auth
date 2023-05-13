@@ -51,7 +51,7 @@ const Register = ({ onRegister }) => {
               onChange={handleChange}
               value={values.password || ''}
               placeholder="Пароль"
-              minLength={4}
+              minLength={8}
               required
             />
             <span
@@ -72,7 +72,7 @@ const Register = ({ onRegister }) => {
           </button>
           <span className="form-auth__under-text">
             Уже зарегистрированы?{' '}
-            <Link to="/sing-up" className="form-auth__link link">
+            <Link to="/sign-up" className="form-auth__link link">
               Войти
             </Link>
           </span>

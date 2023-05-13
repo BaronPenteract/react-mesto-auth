@@ -41,6 +41,7 @@ function App() {
   const [selectedCard, setSelectedCard] = React.useState(null);
 
   const [cards, setCards] = React.useState([]);
+  const [isCardsLoaded, setIsCardsLoaded] = React.useState(false);
 
   const navigate = useNavigate();
 
@@ -51,7 +52,8 @@ function App() {
       checkToken(token)
         .then((res) => {
           if (res) {
-            setEmail(res.data.email);
+            
+            setEmail(res.email);
             setLoggedIn(true);
             navigate('/', { replace: true });
           }
@@ -60,7 +62,7 @@ function App() {
           console.log(err);
         });
     }
-  }, []);
+  }, [navigate]);
 
   React.useEffect(() => {
     /* ------------------------------------------CARDS DATA */
@@ -69,6 +71,7 @@ function App() {
         .getInitialCards()
         .then((cardsData) => {
           setCards(cardsData);
+          setIsCardsLoaded(true)
         })
         .catch(api.handleError);
     } else {
@@ -219,6 +222,7 @@ function App() {
     login(formValue)
       .then((res) => {
         if (res) {
+          api.updateToken(res.token)
           localStorage.setItem('jwt', res.token);
           setEmail(formValue.email);
           setLoggedIn(true);
@@ -243,7 +247,7 @@ function App() {
     register(formValue)
       .then((res) => {
         if (res) {
-          navigate('/sing-up', { replace: true });
+          navigate('/sign-up', { replace: true });
           setIsInfoTooltipOpen(true);
           setInfoToolTipContent({
             text: 'Вы успешно зарегестрировались!',
@@ -266,10 +270,11 @@ function App() {
 
   const handleSingOut = () => {
     localStorage.removeItem('jwt');
+    
     setLoggedIn(false);
-    navigate('/sing-up', { replace: true });
+    navigate('/sign-up', { replace: true });
   };
-
+  
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
@@ -281,6 +286,7 @@ function App() {
               <ProtectedRoute
                 element={Main}
                 loggedIn={loggedIn}
+                isCardsLoaded={isCardsLoaded}
                 onEditProfile={handleEditProfileClick}
                 onAddPlace={handleAddPlaceClick}
                 onEditAvatar={handleEditAvatarClick}
@@ -291,8 +297,8 @@ function App() {
               />
             }
           />
-          <Route path="/sing-up" element={<Login onLogin={handleLogin} />} />
-          <Route path="/sing-in" element={<Register onRegister={handleRegister} />} />
+          <Route path="/sign-up" element={<Login onLogin={handleLogin} />} />
+          <Route path="/sign-in" element={<Register onRegister={handleRegister} />} />
           <Route path="/*" element={<Navigate to="/" replace />} />
         </Routes>
         {/* ------------------------------------------------------------------------AVATAR FORM */}

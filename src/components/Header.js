@@ -20,17 +20,17 @@ export default function Header({ email, onSingOut }) {
       <img className="header__logo" src={logo} alt="Логотип Mesto Russia" />
       <Routes>
         <Route
-          path="/sing-in"
+          path="/sign-in"
           element={
-            <Link to="/sing-up" className="header__auth-link link">
+            <Link to="/sign-up" className="header__auth-link link">
               Войти
             </Link>
           }
         />
         <Route
-          path="/sing-up"
+          path="/sign-up"
           element={
-            <Link to="/sing-in" className="header__auth-link link">
+            <Link to="/sign-in" className="header__auth-link link">
               Регистрация
             </Link>
           }

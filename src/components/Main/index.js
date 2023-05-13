@@ -9,6 +9,7 @@ import AvatarSceleton from './AvatarSceleton';
 import ProfileInfoSceleton from './ProfileInfoSceleton';
 
 export default function Main({
+  isCardsLoaded,
   onEditProfile,
   onAddPlace,
   onEditAvatar,
@@ -83,7 +84,7 @@ export default function Main({
           ></button>
         </section>
         <section className="cards" aria-label="Места, где побывал">
-          <ul className="cards__list">{cards.length ? cardsElements : cardsSceletonElements}</ul>
+          <ul className="cards__list">{isCardsLoaded ? cardsElements : cardsSceletonElements}</ul>
         </section>
       </main>
       <Footer />

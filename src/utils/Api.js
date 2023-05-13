@@ -1,3 +1,5 @@
+import { BASE_URL } from "./Auth";
+
 class Api {
   constructor(options) {
     this._baseUrl = options.baseUrl;
@@ -107,12 +109,20 @@ class Api {
 
     return Promise.reject(`Ошибка: ${result.status}`);
   }
+
+  updateToken(token) {
+    this._token = `Bearer ${token}`;
+  }
 }
 
-export default new Api({
-  baseUrl: 'https://mesto.nomoreparties.co/v1/cohort-59',
+const api =  new Api({
+  baseUrl: BASE_URL,
+  baseUrlOld: 'https://mesto.nomoreparties.co/v1/cohort-59',
   headers: {
-    authorization: 'cb4b8bf9-d1cf-4125-b87a-d2721614cb5f',
+    authorization: `Bearer ${localStorage.getItem('jwt')}`,
+    authorizationOld: 'cb4b8bf9-d1cf-4125-b87a-d2721614cb5f',
     'Content-Type': 'application/json',
   },
 });
+
+export default api;
